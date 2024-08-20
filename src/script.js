@@ -521,10 +521,12 @@ const startBtn = document.querySelector('.start-btn');
 const startContainer = document.querySelector('.start-container');
 const bgAudio = new Audio('./audio/bg.mp3')
 const introAudio = new Audio('./audio/intro.mp3')
+let hasStarted = false;
 
 gsap.to(camera.position, {x:-15, duration:53})
 
 startBtn.addEventListener('click', ()=>{
+    hasStarted = true
     bgAudio.play()
     introAudio.play()
     bgAudio.loop = true
@@ -537,3 +539,11 @@ const introAnimation = () => {
     introTL.to(startContainer, {autoAlpha:0, duration: 1})
     introTL.to(camera.position, {x:5, y:1, z:5, duration:3})
 }
+
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        bgAudio.pause();
+    } else{
+       if ( hasStarted)  bgAudio.play()
+    }
+  });
