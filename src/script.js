@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { Timer } from 'three/addons/misc/Timer.js'
+import { Sky } from 'three/addons/objects/Sky.js'
 import GUI from 'lil-gui'
 
 /**
@@ -68,9 +69,9 @@ roofARMTexture.wrapS = THREE.RepeatWrapping
 roofNormalTexture.wrapS = THREE.RepeatWrapping
 
 //Bushes
-const bushesColorTexture = textureLoader.load('./bushes/forest_leaves_03/forest_leaves_03_diff_1k.jpg')
-const bushesARMTexture = textureLoader.load('./bushes/forest_leaves_03/forest_leaves_03_arm_1k.jpg')
-const bushesNormalTexture = textureLoader.load('./bushes/forest_leaves_03/forest_leaves_03_nor_gl_1k.jpg')
+const bushesColorTexture = textureLoader.load('./bushes/forest_leaves_03/forest_leaves_03_diff_1k.webp')
+const bushesARMTexture = textureLoader.load('./bushes/forest_leaves_03/forest_leaves_03_arm_1k.webp')
+const bushesNormalTexture = textureLoader.load('./bushes/forest_leaves_03/forest_leaves_03_nor_gl_1k.webp')
 
 bushesColorTexture.colorSpace = THREE.SRGBColorSpace
 
@@ -241,6 +242,8 @@ for (let i = 0; i < 29; i++) {
     const grave = new THREE.Group()
 
     const block = new THREE.Mesh(graveGeometry, graveMaterial)
+    block.castShadow = true;
+    block.receiveShadow = true
 
     //Random crosses
 
@@ -248,6 +251,10 @@ for (let i = 0; i < 29; i++) {
         const cross = new THREE.Group()
         const crossVert = new THREE.Mesh(crossVertGeo, graveMaterial)
         const crossHor = new THREE.Mesh(crossHorGeo, graveMaterial)
+        crossHor.castShadow = true
+        crossVert.castShadow = true
+
+
         crossHor.position.y = .03
         crossHor.position.z = 0.0001
 
@@ -345,8 +352,65 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 
 //Shadows
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+directionalLight.castShadow = true
+ghost1.castShadow = true;
+ghost2.castShadow = true;
+ghost3.castShadow = true;
+
+walls.castShadow = true
+walls.receiveShadow = true
+roof.castShadow = true
+plane.receiveShadow = true
+
+bush1.receiveShadow = true
+bush2.receiveShadow = true
+bush3.receiveShadow = true
+
+bush1.castShadow = true
+bush2.castShadow = true
+bush3.castShadow = true
+
+// Mappings
+directionalLight.shadow.mapSize.width = 256
+directionalLight.shadow.mapSize.height = 256
+directionalLight.shadow.camera.top = 8
+directionalLight.shadow.camera.right = 8
+directionalLight.shadow.camera.bottom = - 8
+directionalLight.shadow.camera.left = - 8
+directionalLight.shadow.camera.near = 1
+directionalLight.shadow.camera.far = 20
+
+ghost1.shadow.mapSize.width = 256
+ghost1.shadow.mapSize.height = 256
+ghost1.shadow.camera.far = 10
+
+ghost2.shadow.mapSize.width = 256
+ghost2.shadow.mapSize.height = 256
+ghost2.shadow.camera.far = 10
+
+ghost3.shadow.mapSize.width = 256
+ghost3.shadow.mapSize.height = 256
+ghost3.shadow.camera.far = 10
 
 
+
+
+//Sky
+const sky = new Sky()
+sky.scale.set(100,100,100)
+scene.add(sky)
+
+sky.material.uniforms['turbidity'].value = 10
+sky.material.uniforms['rayleigh'].value = 3
+sky.material.uniforms['mieCoefficient'].value = 0.1
+sky.material.uniforms['mieDirectionalG'].value = 0.95
+sky.material.uniforms['sunPosition'].value.set(0.3, -0.038, -0.95)
+
+//Fog
+scene.fog = new THREE.FogExp2('#04343f', .1)
 
 /**
  * Animate
