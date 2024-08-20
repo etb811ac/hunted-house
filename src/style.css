@@ -8,6 +8,7 @@ html,
 body
 {
     overflow: hidden;
+    font-family: "EB Garamond", serif;
 }
 
 .webgl
@@ -16,4 +17,41 @@ body
     top: 0;
     left: 0;
     outline: none;
+}
+
+.content-container{
+    background-color: rgba(0, 0, 0, .2);
+    position: absolute;
+    width: 100dvw;
+    height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: #fff;
+}
+
+.content-container .button{
+    background-color: rgba(0, 0, 0, .5);
+    padding: 10px 25px;
+    margin: 30px;
+    font-size: 30px;
+    cursor: pointer;
+    transition: 1s all;
+}
+
+.content-container p{
+    font-size: 25px;
+    line-height: 32px;
+    margin: 20px;
+    max-width: 500px;
+    text-align: center;
+}
+
+.content-container p.footnote{
+    font-size: 14px;
+}
+
+.content-container .button:hover{
+    transform: scale(1.2);
 }

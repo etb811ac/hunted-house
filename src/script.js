@@ -382,15 +382,11 @@ window.addEventListener('resize', () => {
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-// camera.position.x = 4
-// camera.position.y = 2
-// camera.position.z = 5
 camera.position.x = 1
 camera.position.y = 15
 camera.position.z = 25
 scene.add(camera)
 
-gsap.to(camera.position, {x:5, y:1, z:5, duration:3})
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
@@ -516,3 +512,28 @@ const tick = () => {
 }
 
 tick()
+
+
+
+
+//Intro
+const startBtn = document.querySelector('.start-btn');
+const startContainer = document.querySelector('.start-container');
+const bgAudio = new Audio('./audio/bg.mp3')
+const introAudio = new Audio('./audio/intro.mp3')
+
+gsap.to(camera.position, {x:-15, duration:53})
+
+startBtn.addEventListener('click', ()=>{
+    bgAudio.play()
+    introAudio.play()
+    bgAudio.loop = true
+    introAnimation();
+})
+
+const introAnimation = () => {
+    gsap.killTweensOf(camera.position);
+    const introTL = gsap.timeline()
+    introTL.to(startContainer, {autoAlpha:0, duration: 1})
+    introTL.to(camera.position, {x:5, y:1, z:5, duration:3})
+}
