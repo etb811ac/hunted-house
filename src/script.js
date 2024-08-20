@@ -3,12 +3,13 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { Timer } from 'three/addons/misc/Timer.js'
 import { Sky } from 'three/addons/objects/Sky.js'
 import GUI from 'lil-gui'
+import gsap from 'gsap'
 
 /**
  * Base
  */
 // Debug
-const gui = new GUI()
+//const gui = new GUI()
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -60,9 +61,9 @@ const roofNormalTexture = textureLoader.load('./roof/ceramic_roof_01/ceramic_roo
 
 roofColorTexture.colorSpace = THREE.SRGBColorSpace
 
-roofColorTexture.repeat.set(5,1)
-roofARMTexture.repeat.set(5,1)
-roofNormalTexture.repeat.set(5,1)
+roofColorTexture.repeat.set(5, 1)
+roofARMTexture.repeat.set(5, 1)
+roofNormalTexture.repeat.set(5, 1)
 
 roofColorTexture.wrapS = THREE.RepeatWrapping
 roofARMTexture.wrapS = THREE.RepeatWrapping
@@ -75,13 +76,28 @@ const bushesNormalTexture = textureLoader.load('./bushes/forest_leaves_03/forest
 
 bushesColorTexture.colorSpace = THREE.SRGBColorSpace
 
-bushesColorTexture.repeat.set(2,1)
-bushesARMTexture.repeat.set(2,1)
-bushesNormalTexture.repeat.set(2,1)
+bushesColorTexture.repeat.set(2, 1)
+bushesARMTexture.repeat.set(2, 1)
+bushesNormalTexture.repeat.set(2, 1)
 
 bushesColorTexture.wrapS = THREE.RepeatWrapping
 bushesARMTexture.wrapS = THREE.RepeatWrapping
 bushesNormalTexture.wrapS = THREE.RepeatWrapping
+
+//Table
+const tableColorTexture = textureLoader.load('./table/bark_willow_02/bark_willow_02_diff_1k.jpg')
+const tableARMTexture = textureLoader.load('./table/bark_willow_02/bark_willow_02_arm_1k.jpg')
+const tableNormalTexture = textureLoader.load('./table/bark_willow_02/bark_willow_02_nor_gl_1k.jpg')
+
+tableColorTexture.colorSpace = THREE.SRGBColorSpace
+
+tableColorTexture.repeat.set(.2, 1)
+tableARMTexture.repeat.set(.2, 1)
+tableNormalTexture.repeat.set(.2, 1)
+
+tableColorTexture.wrapS = THREE.RepeatWrapping
+tableARMTexture.wrapS = THREE.RepeatWrapping
+tableNormalTexture.wrapS = THREE.RepeatWrapping
 
 //Graves
 const graveColorTexture = textureLoader.load('./grave/plastered_stone_wall/plastered_stone_wall_diff_1k.jpg')
@@ -90,9 +106,9 @@ const graveNormalTexture = textureLoader.load('./grave/plastered_stone_wall/plas
 
 graveColorTexture.colorSpace = THREE.SRGBColorSpace
 
-graveColorTexture.repeat.set(.3,1)
-graveARMTexture.repeat.set(.3,1)
-graveNormalTexture.repeat.set(.3,1)
+graveColorTexture.repeat.set(.3, 1)
+graveARMTexture.repeat.set(.3, 1)
+graveNormalTexture.repeat.set(.3, 1)
 
 // Door
 const doorColorTexture = textureLoader.load('./door/color.jpg')
@@ -109,26 +125,25 @@ doorColorTexture.colorSpace = THREE.SRGBColorSpace
 //Objects
 //Floor
 const plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(20, 20, 200, 200),
+    new THREE.PlaneGeometry(23, 23, 200, 200),
     new THREE.MeshStandardMaterial({
         alphaMap: floorAlphaTextures,
         transparent: true,
         map: floorColorTexture,
-        aoMap: floorARMTexture ,
+        aoMap: floorARMTexture,
         roughnessMap: floorARMTexture,
         metalnessMap: floorARMTexture,
         normalMap: floorNormalTexture,
         displacementMap: floorDisplacementTexture,
         displacementScale: .09,
-        displacementBias: -0.057
+        displacementBias: -0.057,
+        side: THREE.DoubleSide
     })
 )
 plane.rotation.x = - Math.PI * 0.5
 scene.add(plane)
 
 
-gui.add(plane.material, 'displacementScale').min(0).max(1).step(0.001)
-gui.add(plane.material, 'displacementBias').min(-1).max(1).step(0.001)
 /**
  * House
  */
@@ -144,7 +159,8 @@ const walls = new THREE.Mesh(
             aoMap: wallARMTexture,
             roughnessMap: wallARMTexture,
             metalnessMap: wallARMTexture,
-            normalMap: wallNormalTexture
+            normalMap: wallNormalTexture,
+            side: THREE.DoubleSide
         }
     )
 )
@@ -168,7 +184,7 @@ roof.rotation.y = Math.PI * .25
 
 const door = new THREE.Mesh(
     new THREE.PlaneGeometry(2.2, 2.2, 100, 100),
-    new THREE.MeshStandardMaterial({ 
+    new THREE.MeshStandardMaterial({
         map: doorColorTexture,
         transparent: true,
         alphaMap: doorAlphaTexture,
@@ -260,7 +276,7 @@ for (let i = 0; i < 29; i++) {
 
         cross.add(crossVert, crossHor)
         cross.position.y = .4 + .12
-        
+
 
         grave.add(cross)
     }
@@ -278,6 +294,40 @@ for (let i = 0; i < 29; i++) {
 
     graves.add(grave)
 
+}
+
+//Fence
+const fence = new THREE.Group()
+fence.position.z = -7.1
+fence.position.x = -4
+scene.add(fence)
+
+const tableGeometry = new THREE.BoxGeometry(.15, .8, .05)
+const tableMaterial = new THREE.MeshStandardMaterial({
+    map: tableColorTexture,
+    aoMap: tableARMTexture,
+    roughnessMap: tableARMTexture,
+    metalnessMap: tableARMTexture,
+    normalMap: tableNormalTexture
+})
+
+
+
+for (let i = 0; i < 13; i++) {
+    const table = new THREE.Mesh(
+        tableGeometry, tableMaterial
+    )
+
+    table.position.x = (i - 0.5) * (Math.random() * (1 - 0.5) + 0.5)
+    table.position.y = Math.random() * 0.4
+    
+    table.rotation.z = - (Math.random() - 0.5) * .3
+    table.rotation.x = - (Math.random() - 0.5) * .3
+
+    table.castShadow = true
+    table.receiveShadow = true
+
+    fence.add(table)
 }
 
 
@@ -300,8 +350,8 @@ house.add(doorLight)
 
 
 /////Ghosts
-const ghost1 = new THREE.PointLight('#8800ff', 6)
-const ghost2 = new THREE.PointLight('#ff0088', 6)
+const ghost1 = new THREE.PointLight('#ddb44d', 6)
+const ghost2 = new THREE.PointLight('#828282', 6)
 const ghost3 = new THREE.PointLight('#ff0000', 6)
 scene.add(ghost1, ghost2, ghost3)
 
@@ -332,10 +382,15 @@ window.addEventListener('resize', () => {
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 4
-camera.position.y = 2
-camera.position.z = 5
+// camera.position.x = 4
+// camera.position.y = 2
+// camera.position.z = 5
+camera.position.x = 1
+camera.position.y = 15
+camera.position.z = 25
 scene.add(camera)
+
+gsap.to(camera.position, {x:5, y:1, z:5, duration:3})
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
@@ -400,7 +455,7 @@ ghost3.shadow.camera.far = 10
 
 //Sky
 const sky = new Sky()
-sky.scale.set(100,100,100)
+sky.scale.set(100, 100, 100)
 scene.add(sky)
 
 sky.material.uniforms['turbidity'].value = 10
@@ -417,6 +472,16 @@ scene.fog = new THREE.FogExp2('#04343f', .1)
  */
 const timer = new Timer()
 
+var doorLightTl = gsap.timeline({ onComplete: () => { gsap.delayedCall(gsap.utils.random(5, 15), () => doorLightTl.restart()) } });
+doorLightTl.set(doorLight, { intensity: 0, duration: 2 })
+doorLightTl.set(doorLight, { intensity: 3, duration: .5 }, ">+.1")
+doorLightTl.set(doorLight, { intensity: 0, duration: 2 }, ">+.2")
+doorLightTl.set(doorLight, { intensity: 3, duration: .5 }, ">+.2")
+doorLightTl.set(doorLight, { intensity: 0, duration: 2 }, ">+.1")
+doorLightTl.to(doorLight, { intensity: 20, duration: 1 }, ">+1")
+doorLightTl.to(doorLight, { intensity: 5, duration: 3 })
+
+
 const tick = () => {
     // Timer
     timer.update()
@@ -424,19 +489,20 @@ const tick = () => {
 
     //ghosts
     const ghostAngle1 = elapsedTime * .5
-    ghost1.position.x = Math.sin(ghostAngle1) * 5 
-    ghost1.position.z = Math.cos(ghostAngle1) * 5 
+    ghost1.position.x = Math.sin(ghostAngle1) * 5
+    ghost1.position.z = Math.cos(ghostAngle1) * 5
     ghost1.position.y = Math.sin(ghostAngle1) * Math.sin(ghostAngle1 * 2.34) * Math.sin(ghostAngle1 * 4.56)
 
     const ghostAngle2 = - elapsedTime * .38
     ghost2.position.x = Math.sin(ghostAngle2) * 4
-    ghost2.position.z = Math.cos(ghostAngle2) * 4 
+    ghost2.position.z = Math.cos(ghostAngle2) * 4
     ghost2.position.y = Math.sin(ghostAngle2) * Math.sin(ghostAngle2 * 2.34) * Math.sin(ghostAngle2 * 4.56)
 
     const ghostAngle3 = - elapsedTime * .23
     ghost3.position.x = Math.sin(ghostAngle3) * 7
-    ghost3.position.z = Math.cos(ghostAngle3) * 7 
+    ghost3.position.z = Math.cos(ghostAngle3) * 7
     ghost3.position.y = Math.sin(ghostAngle3) * Math.sin(ghostAngle3 * 2.34) * Math.sin(ghostAngle3 * 4.56)
+
 
 
     // Update controls
