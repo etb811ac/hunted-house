@@ -3,7 +3,7 @@
 <p align="center">A spooky little Three.js scene — a house, a graveyard, drifting ghosts, fog, and fully dynamic shadows, all lit for maximum atmosphere.</p>
 
 <p align="center">
-  <a href="https://hunted-house.netlify.app/"><img src="https://img.shields.io/badge/▶%20Live%20Demo-Open-FF4D00?style=for-the-badge" alt="Live Demo"></a>
+  <a href="https://hunted-house-e-acuna.netlify.app/"><img src="https://img.shields.io/badge/▶%20Live%20Demo-Open-FF4D00?style=for-the-badge" alt="Live Demo"></a>
 </p>
 
 <p align="center">
